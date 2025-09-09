@@ -1,330 +1,366 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
+/**
+ * Google Form wiring
+ * (these are your values)
+ */
+const FORM_ACTION =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfnQ9zgOPEb9P-WbU-2RHu5wrcvbxyxsl_fgSPomacbsmsn7g/formResponse";
+const ENTRY_NAME_ID = "entry.1649839627"; // Name
+const ENTRY_EMAIL_ID = "entry.1541683632"; // Email
 
 export default function HomePage() {
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [isSubmitted, setIsSubmitted] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    setIsSubmitted(true)
-  }
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const submittedRef = useRef(false);
 
   return (
-    <div className="min-h-screen bg-background snap-y snap-mandatory overflow-y-scroll">
-      {/* Hero Section */}
-      <section className="relative px-6 py-24 lg:px-8 min-h-screen flex items-center snap-start">
-        <div className="mx-auto max-w-4xl text-center">
-          {/* Logo/Brand */}
-          <div className="mb-8">
-            <h1 className="font-mono text-6xl font-bold tracking-tight text-foreground lg:text-8xl">
-              grep<span className="cursor-blink text-purple-500">_</span>
-            </h1>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* HERO */}
+      <section className="relative overflow-hidden px-6 py-20 md:py-28">
+        {/* subtle orbital rings */}
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-[-520px] h-[1200px] w-[1200px] -translate-x-1/2 rounded-full border border-purple-500/20" />
+          <div className="absolute left-[10%] top-[-300px] h-[900px] w-[900px] rounded-full border border-purple-500/10" />
+          <div className="absolute right-[-200px] top-[-200px] h-[700px] w-[700px] rounded-full border border-purple-500/10" />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl text-center">
+          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
+            <span className="h-2 w-2 rounded-full bg-purple-500" />
+            Available in November 2025
           </div>
 
-          {/* Tagline */}
-          <h2 className="mb-6 text-2xl font-semibold text-foreground lg:text-3xl">
+          <h1 className="font-mono text-6xl font-bold tracking-tight md:text-7xl">
+            grep
+            <span
+              className="cursor-blink text-purple-500"
+              style={{ display: "inline-block", marginLeft: "-0.04em" }} // glue the underscore to "grep"
+            >
+              _
+            </span>
+          </h1>
+
+          <h2 className="mt-6 text-2xl font-semibold md:text-3xl">
             The AI autopilot for Linux. No more 3am outages.
           </h2>
 
-          {/* Subtext */}
-          <p className="mb-8 text-lg text-muted-foreground lg:text-xl">
-            Detect → Diagnose → Fix in real time. AI that closes the loop, not just flag alerts.
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">
+            Detect → Diagnose → Fix in real time. AI that closes the loop, not
+            just flag alerts.
           </p>
 
-          {/* Terminal Command Animation */}
-          <div className="mb-12 mx-auto max-w-2xl">
-            <Card className="bg-card border-border glow-card">
+          {/* hidden iframe keeps user on the page */}
+          <iframe
+            name="hidden_iframe"
+            id="hidden_iframe"
+            style={{ display: "none" }}
+            onLoad={() => {
+              if (submittedRef.current) {
+                setIsSubmitted(true);
+                submittedRef.current = false;
+                setEmail("");
+                setName("");
+              }
+            }}
+          />
+
+          {/* inline waitlist form */}
+          {!isSubmitted ? (
+            <form
+              action={FORM_ACTION}
+              method="POST"
+              target="hidden_iframe"
+              onSubmit={() => {
+                submittedRef.current = true;
+              }}
+              className="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-3 rounded-2xl border border-border/60 bg-card/40 p-2 backdrop-blur md:flex-row"
+            >
+              <Input
+                type="text"
+                name={ENTRY_NAME_ID}
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground"
+                required
+              />
+              <Input
+                type="email"
+                name={ENTRY_EMAIL_ID}
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground"
+                required
+              />
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 md:w-auto"
+                size="lg"
+              >
+                Get Early Access
+              </Button>
+            </form>
+          ) : (
+            <div className="mx-auto mt-8 max-w-2xl rounded-xl border border-purple-500/30 bg-purple-500/5 p-4 text-center text-sm text-purple-300">
+              ✓ You’re in. We’ll email updates soon.
+            </div>
+          )}
+
+          {/* tiny terminal visual */}
+          <div className="mx-auto mt-8 max-w-2xl">
+            <Card className="bg-card border-border">
               <CardContent className="p-6">
                 <div className="font-mono text-left text-sm">
-                  <div className="text-muted-foreground mb-2">$ grep --deploy production</div>
-                  <div className="text-purple-400 typewriter">✓ Autonomous monitoring activated</div>
-                  <div className="text-purple-400 mt-1">✓ Self-healing protocols enabled</div>
-                  <div className="text-purple-400 mt-1">✓ Cross-platform Linux support ready</div>
-                  <div className="text-purple-400 mt-1">✓ MTTR reduced from 3.5hrs to &lt;5min</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* CTA Button */}
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 text-lg px-8 py-6 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300"
-            onClick={() => document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" })}
-          >
-            Join the Waitlist
-          </Button>
-        </div>
-      </section>
-
-      {/* Problem → Solution Section */}
-      <section className="px-6 py-16 lg:px-8 min-h-screen flex items-center snap-start">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-12 lg:grid-cols-2">
-            {/* Problem */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-8">
-                <h3 className="mb-4 font-mono text-2xl font-bold text-red-500">// Problem</h3>
-                <p className="text-lg text-card-foreground mb-6">
-                  Enterprise downtime costs $9,000 per minute. SREs are burning out from 24/7 on-call rotations while
-                  the talent gap widens.
-                </p>
-                <div className="space-y-3 font-mono text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <span className="text-red-500">×</span>
-                    <span>$9,000/min average enterprise downtime cost</span>
+                  <div className="mb-2 text-muted-foreground">
+                    $ grep --deploy production
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-red-500">×</span>
-                    <span>3.5 hours typical MTTR for critical incidents</span>
+                  <div className="text-purple-400">
+                    ✓ Autonomous monitoring activated
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-red-500">×</span>
-                    <span>70% of SREs report burnout from on-call</span>
+                  <div className="mt-1 text-purple-400">
+                    ✓ Self-healing protocols enabled
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-red-500">×</span>
-                    <span>1M+ unfulfilled DevOps/SRE roles by 2026</span>
+                  <div className="mt-1 text-purple-400">
+                    ✓ Cross-platform Linux support ready
+                  </div>
+                  <div className="mt-1 text-purple-400">
+                    ✓ MTTR reduced from 3.5hrs to &lt;5min
                   </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Solution */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-8">
-                <h3 className="mb-4 font-mono text-2xl font-bold text-purple-500">// Solution</h3>
-                <p className="text-lg text-card-foreground mb-6">
-                  AI that doesn't wake you up. Self-healing Linux ops, 24/7, across multi-cloud environments. From
-                  co-pilot to autopilot.
-                </p>
-                <div className="space-y-3 font-mono text-sm text-purple-400">
-                  <div className="flex items-center gap-2">
-                    <span className="text-purple-500">✓</span>
-                    <span>MTTR cut from 3.5 hours to &lt;5 minutes</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-purple-500">✓</span>
-                    <span>Human-in-loop → fully autonomous remediation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-purple-500">✓</span>
-                    <span>Deep integration with Prometheus, Grafana, K8s</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-purple-500">✓</span>
-                    <span>Open plugin ecosystem for rapid integrations</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16 lg:px-8 bg-muted/20 min-h-screen flex items-center snap-start">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="font-mono text-3xl font-bold text-foreground mb-4">// Why Grep Wins</h2>
-            <p className="text-lg text-muted-foreground">The only true cross-platform & autonomous ops tool</p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-              <CardContent className="p-6">
-                <div className="mb-4 font-mono text-lg font-bold text-purple-500">Linux-Native</div>
-                <p className="text-sm text-muted-foreground">
-                  Deep integration with open-source tools like Prometheus, Grafana & Kubernetes
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-              <CardContent className="p-6">
-                <div className="mb-4 font-mono text-lg font-bold text-purple-500">Human → Autonomy</div>
-                <p className="text-sm text-muted-foreground">
-                  Human-in-the-loop initially, gradually handing off safe fixes to AI
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-              <CardContent className="p-6">
-                <div className="mb-4 font-mono text-lg font-bold text-purple-500">Open Plugins</div>
-                <p className="text-sm text-muted-foreground">
-                  Developer-friendly plugin ecosystem accelerates new integrations
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-              <CardContent className="p-6">
-                <div className="mb-4 font-mono text-lg font-bold text-purple-500">Data Moat</div>
-                <p className="text-sm text-muted-foreground">Unique incident & fix telemetry grows smarter over time</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-16 lg:px-8 min-h-screen flex items-center snap-start">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="font-mono text-3xl font-bold text-foreground mb-4">// Validation</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Trusted by engineers at leading tech companies & selected by top AI infrastructure builders
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              No spam. We’ll only email product updates.
             </p>
-
-            {/* Company Logos */}
-            <div className="flex flex-wrap items-center justify-center gap-8 mb-12 opacity-60">
-              <div className="font-mono text-lg font-semibold text-muted-foreground">LUX CAPITAL</div>
-              <div className="font-mono text-lg font-semibold text-muted-foreground">AWS</div>
-              <div className="font-mono text-lg font-semibold text-muted-foreground">COGNITION</div>
-              <div className="font-mono text-lg font-semibold text-muted-foreground">MODAL</div>
-            </div>
-
-            {/* Engineer Validation */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-                <CardContent className="p-6 text-center">
-                  <div className="font-mono text-sm font-bold text-purple-500 mb-2">Meta</div>
-                  <p className="text-xs text-muted-foreground">Engineer Validated</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-                <CardContent className="p-6 text-center">
-                  <div className="font-mono text-sm font-bold text-purple-500 mb-2">JPMorgan</div>
-                  <p className="text-xs text-muted-foreground">Engineer Validated</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-                <CardContent className="p-6 text-center">
-                  <div className="font-mono text-sm font-bold text-purple-500 mb-2">Stripe</div>
-                  <p className="text-xs text-muted-foreground">Engineer Validated</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-                <CardContent className="p-6 text-center">
-                  <div className="font-mono text-sm font-bold text-purple-500 mb-2">AWS</div>
-                  <p className="text-xs text-muted-foreground">Engineer Validated</p>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-16 lg:px-8 bg-muted/20 min-h-screen flex items-center snap-start">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-mono text-3xl font-bold text-foreground mb-8">// Market Opportunity</h2>
-
-          <div className="grid gap-8 md:grid-cols-2 mb-12">
-            <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-              <CardContent className="p-8">
-                <div className="font-mono text-4xl font-bold text-purple-500 mb-2">$12B</div>
-                <div className="font-mono text-lg text-foreground mb-2">AIOps 2025</div>
-                <p className="text-sm text-muted-foreground">
-                  Growing at 20-30% annually as enterprises seek automation
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border hover:border-purple-500/50 transition-colors duration-300 glow-card-hover">
-              <CardContent className="p-8">
-                <div className="font-mono text-4xl font-bold text-purple-500 mb-2">$22B</div>
-                <div className="font-mono text-lg text-foreground mb-2">GenAI DevOps 2032</div>
-                <p className="text-sm text-muted-foreground">38% CAGR as AI transforms operations workflows</p>
-              </CardContent>
-            </Card>
+      {/* value props (tight spacing) */}
+      <section className="px-6 py-14">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 text-center">
+            <h3 className="font-mono text-3xl font-bold">
+              Why teams pick grep
+            </h3>
+            <p className="mt-2 text-muted-foreground">Clear wins, day one.</p>
           </div>
 
-          <p className="text-lg text-muted-foreground">
-            <span className="font-mono text-purple-500">ROI:</span> Preventing one outage per year pays for Grep 10×
-            over
-          </p>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <ValueCard
+              title="Self-healing"
+              copy="Automate safe runbooks with human-in-the-loop → full autonomy."
+            />
+            <ValueCard
+              title="Cut MTTR"
+              copy="From hours to minutes with diagnose → remediate → verify loops."
+            />
+            <ValueCard
+              title="Noise ↓"
+              copy="Correlate alerts and suppress flapping; act only on real incidents."
+            />
+            <ValueCard
+              title="Linux-native"
+              copy="Integrates with Prometheus, Grafana, and Kubernetes."
+            />
+            <ValueCard
+              title="Audit trail"
+              copy="Every action explainable and reviewable for compliance."
+            />
+            <ValueCard
+              title="Open plugins"
+              copy="Add integrations fast without changing your stack."
+            />
+          </div>
         </div>
       </section>
 
-      <section id="waitlist" className="px-6 py-24 lg:px-8 min-h-screen flex items-center snap-start">
-        <div className="mx-auto max-w-2xl">
-          <Card className="bg-card border-border glow-card">
-            <CardContent className="p-8">
-              <div className="text-center mb-8">
-                <h3 className="mb-4 font-mono text-3xl font-bold text-foreground">Join the AI SRE Revolution</h3>
-                <p className="text-lg text-muted-foreground mb-4">
-                  Be among the first to experience infrastructure that runs itself.
-                </p>
-                <div className="font-mono text-sm text-purple-500">Early access • Pilot program • Shape the future</div>
+      {/* how it works (clean arrows) */}
+      <section className="px-6 pb-10">
+        <div className="mx-auto max-w-5xl">
+          <Card className="bg-card border-border">
+            <CardContent className="p-6 md:p-8">
+              <div className="mb-6 text-center font-mono text-2xl text-foreground">
+                How it works
               </div>
 
-              {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Input
-                      type="text"
-                      placeholder="Your name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="email"
-                      placeholder="your.email@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-                      required
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300"
-                    size="lg"
-                  >
-                    Get Early Access
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Join FAANG+ and Fintech engineers already in our pilot program
-                  </p>
-                </form>
-              ) : (
-                <div className="text-center">
-                  <div className="mb-4 font-mono text-purple-500 text-lg">✓ Welcome to the future of ops</div>
-                  <p className="text-muted-foreground">We'll be in touch soon with pilot program details.</p>
-                </div>
-              )}
+              {/* desktop: box → arrow → box → arrow → box */}
+              <div className="hidden items-center gap-6 md:grid [grid-template-columns:1fr_auto_1fr_auto_1fr]">
+                <DiagramBox
+                  title="Detect"
+                  lines={[
+                    "Prometheus alerts",
+                    "Syslogs / dmesg",
+                    "Custom probes",
+                  ]}
+                />
+                <ArrowH />
+                <DiagramBox
+                  title="Diagnose"
+                  lines={[
+                    "Correlate signals",
+                    "Root-cause hypothesis",
+                    "Confidence scoring",
+                  ]}
+                />
+                <ArrowH />
+                <DiagramBox
+                  title="Fix"
+                  lines={[
+                    "Apply runbook",
+                    "Rollback on failure",
+                    "Post-fix verification",
+                  ]}
+                />
+              </div>
+
+              {/* mobile: stacked with vertical arrows */}
+              <div className="space-y-4 md:hidden">
+                <DiagramBox
+                  title="Detect"
+                  lines={[
+                    "Prometheus alerts",
+                    "Syslogs / dmesg",
+                    "Custom probes",
+                  ]}
+                />
+                <ArrowV />
+                <DiagramBox
+                  title="Diagnose"
+                  lines={[
+                    "Correlate signals",
+                    "Root-cause hypothesis",
+                    "Confidence scoring",
+                  ]}
+                />
+                <ArrowV />
+                <DiagramBox
+                  title="Fix"
+                  lines={[
+                    "Apply runbook",
+                    "Rollback on failure",
+                    "Post-fix verification",
+                  ]}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border px-6 py-12 lg:px-8 snap-start">
-        <div className="mx-auto max-w-4xl">
-          <div className="text-center">
-            <div className="mb-4 font-mono text-2xl font-bold text-foreground">grep</div>
-            <p className="text-sm text-muted-foreground mb-2">Infrastructure that runs itself.</p>
-            <p className="text-xs text-muted-foreground">
-              We're building the AI SRE that every company will depend on.
-            </p>
-            <div className="mt-6 font-mono text-xs text-muted-foreground">
-              © 2024 Grep. Join us to transform Linux operations forever.
-            </div>
-          </div>
+      {/* FAQ */}
+      <section id="faq" className="px-6 py-12">
+        <div className="mx-auto max-w-3xl space-y-4">
+          <h3 className="font-mono text-2xl"> FAQ</h3>
+
+          <FAQItem
+            q="Is it safe to let AI fix things?"
+            a="Yes. grep starts human-in-the-loop with a full audit trail. You approve changes until you opt into autonomy for specific classes of fixes."
+          />
+          <FAQItem
+            q="What does it integrate with?"
+            a="Prometheus, Grafana, Kubernetes, Docker, systemd—and more via an open plugin model. We meet you where your stack already is."
+          />
+          <FAQItem
+            q="When can I try it?"
+            a="Private pilots start soon. Join the waitlist in the hero—early users help shape runbooks and integrations."
+          />
+          <FAQItem
+            q="Will it spam alerts?"
+            a="No. grep correlates signals to cut alert noise, suppress flapping, and only act on real incidents."
+          />
         </div>
+      </section>
+
+      {/* footer */}
+      <footer className="px-6 pb-10 text-center text-xs text-muted-foreground">
+        © {new Date().getFullYear()} grep
       </footer>
     </div>
-  )
+  );
+}
+
+/* helpers */
+
+function ValueCard({ title, copy }: { title: string; copy: string }) {
+  return (
+    <Card className="bg-card border-border transition-colors hover:border-purple-500/40">
+      <CardContent className="p-6">
+        <div className="mb-2 font-mono text-lg text-purple-400">{title}</div>
+        <p className="text-sm text-muted-foreground">{copy}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DiagramBox({ title, lines }: { title: string; lines: string[] }) {
+  return (
+    <div className="rounded-xl border border-border bg-background/60 p-5">
+      <div className="mb-2 font-mono text-sm text-purple-400">{title}</div>
+      <ul className="space-y-1 text-xs text-muted-foreground">
+        {lines.map((l) => (
+          <li key={l} className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+            {l}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ArrowH() {
+  return (
+    <svg width="68" height="14" viewBox="0 0 68 14" className="text-border/80">
+      <line
+        x1="0"
+        y1="7"
+        x2="58"
+        y2="7"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <polygon points="58,2 68,7 58,12" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ArrowV() {
+  return (
+    <div className="flex items-center justify-center">
+      <svg
+        width="14"
+        height="44"
+        viewBox="0 0 14 44"
+        className="text-border/80"
+      >
+        <line
+          x1="7"
+          y1="0"
+          x2="7"
+          y2="34"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <polygon points="2,34 7,44 12,34" fill="currentColor" />
+      </svg>
+    </div>
+  );
+}
+
+function FAQItem({ q, a }: { q: string; a: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card/40 p-4">
+      <div className="font-mono text-sm text-purple-400">{q}</div>
+      <p className="mt-1 text-sm text-muted-foreground">{a}</p>
+    </div>
+  );
 }

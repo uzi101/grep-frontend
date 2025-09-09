@@ -1,0 +1,7 @@
+<!-- app/icon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="20" fill="#0b0b0b"></rect>
+  <text x="16" y="82" font-size="78" font-weight="800" letter-spacing="-0.02em" fill="#ffffff" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace">g</text>
+  <!-- rounded underscore; snug to the g -->
+  <rect x="78" y="90" width="34" height="6" rx="2" fill="#a855f7"></rect>
+</svg>
