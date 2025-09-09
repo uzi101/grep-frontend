@@ -267,11 +267,11 @@ export default function HomePage() {
           />
           <FAQItem
             q="What does it integrate with?"
-            a="Prometheus, Grafana, Kubernetes, Docker, systemd—and more via an open plugin model. We meet you where your stack already is."
+            a="Prometheus, Grafana, Kubernetes, Docker, systemd, and more via an open plugin model. We meet you where your stack already is."
           />
           <FAQItem
             q="When can I try it?"
-            a="Private pilots start soon. Join the waitlist in the hero—early users help shape runbooks and integrations."
+            a="Private pilots start soon. Join the waitlist in the hero, early users help shape runbooks and integrations."
           />
           <FAQItem
             q="Will it spam alerts?"
